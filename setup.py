@@ -7,7 +7,7 @@ with open(path.join(here, 'README.md')) as f:
 
 setup(
     name='pyDICI',
-    version='0.0.1',
+    version='0.0.2',
     packages=find_packages(),
     url='https://github.com/danielsioli/DICI',
     author='Daniel Oliveira',
