@@ -25,7 +25,7 @@ Exemplo
 |Cronograma|Leiaute|Ano|Entrega|Entidade|Arquivo|
 |----------|-------|---|-------|--------|-------|
 |Acessos SMP 2019|Acessos SMP|2019|MES_2|CLARO S.A. (40.432.544/0001-47)|C:\claro.csv|
-|Cronograma Marca|Cronograma Marca|Pontual|AGENCIA NACIONAL DE TELECOMUNICACOES - SEDE (02.030.715/0001-12)|C:\marca.csv|
+|Cronograma Marca|Cronograma Marca|2019|Pontual|AGENCIA NACIONAL DE TELECOMUNICACOES - SEDE (02.030.715/0001-12)|C:\marca.csv|
 
 Manter o chromedriver.exe (http://chromedriver.chromium.org/downloads) no %PATH% ou na pasta do seu projeto.
 
