@@ -23,7 +23,7 @@ servidor_producao = 'http://sistemasnet/dici/'
 servidor_homologacao = 'http://sistemasnethm/dici/'
 caminho_dici = 'pages/entrada_dados/consultar_entrada_dados.seam'
 
-def start_driver():
+def __start_driver():
 
     global driver
 
@@ -37,7 +37,7 @@ def start_driver():
     })
     driver = webdriver.Chrome(executable_path='chromedriver', options=chrome_options)
 
-def encontra_cronograma():
+def __encontra_cronograma():
     print('[%s]: Acessando o DICI' % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
     driver.get(servidor + caminho_dici)
 
@@ -70,7 +70,7 @@ def encontra_cronograma():
         print(colored('[%s]: Não foi encontrado cronograma \'%s\' no ano %s e entidade %s' % (datetime.now().strftime('%Y-%m-%d %H:%M:%S'),cronograma,ano,entidade),'red'))
         return False
 
-def tem_acesso():
+def __tem_acesso():
     print('[%s]: Verificando se o usuário tem acesso para enviar dados para o cronograma' % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
     try:
         WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.XPATH, '//*[@id="j_id23"]/dt/span')))
@@ -82,7 +82,7 @@ def tem_acesso():
             datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
         return True
 
-def carregar_no_dici():
+def __carregar_no_dici():
 
     global arquivo_dados
 
@@ -91,7 +91,7 @@ def carregar_no_dici():
     arquivo_field = driver.find_element_by_id("arquivo")
     driver.execute_script("arguments[0].style.display = 'block';", arquivo_field)
 
-    old_file, novo_arquivo_dados = renomeia_arquivo()
+    old_file, novo_arquivo_dados = __renomeia_arquivo()
 
     arquivo_field.send_keys(novo_arquivo_dados)
 
@@ -124,9 +124,9 @@ def carregar_no_dici():
             entrega_esperada = nome_esperado[2].split('.')[0]
             if(extensao_esperada.upper() != formato_arquivo.upper()):
                 print(colored('[%s]: Extensão do arquivo está errada. Era esperado %s foi recebido %s'%(datetime.now().strftime('%Y-%m-%d %H:%M:%S'), extensao_esperada.upper(), formato_arquivo.upper()), 'red'))
-            if(leiaute_esperado.upper() != remover_acentos(leiaute).replace(' ', '_').upper()):
+            if(leiaute_esperado.upper() != __remover_acentos(leiaute).replace(' ', '_').upper()):
                 print(colored('[%s]: Leiaute do arquivo está errado. Era esperado %s foi recebido %s' % (
-                datetime.now().strftime('%Y-%m-%d %H:%M:%S'), leiaute_esperado.upper(), remover_acentos(leiaute).replace(' ', '_').upper()), 'red'))
+                datetime.now().strftime('%Y-%m-%d %H:%M:%S'), leiaute_esperado.upper(), __remover_acentos(leiaute).replace(' ', '_').upper()), 'red'))
             if(ano_esperado != str(ano)):
                 print(colored('[%s]: Ano do arquivo está errado. Era esperado %s foi recebido %s' % (
                     datetime.now().strftime('%Y-%m-%d %H:%M:%S'), ano_esperado, ano), 'red'))
@@ -149,12 +149,12 @@ def carregar_no_dici():
     if(old_file):
         rename(novo_arquivo_dados+'.old', novo_arquivo_dados)
 
-def remover_acentos(txt):
+def __remover_acentos(txt):
     return normalize('NFKD', txt).encode('ASCII', 'ignore').decode('ASCII')
 
-def renomeia_arquivo():
+def __renomeia_arquivo():
 
-    nome_correto = (remover_acentos(leiaute) + '-' + str(ano) + '-' + entrega).upper().replace(' ', '_') + '.' + formato_arquivo
+    nome_correto = (__remover_acentos(leiaute) + '-' + str(ano) + '-' + entrega).upper().replace(' ', '_') + '.' + formato_arquivo
 
     if(arquivo_dados != nome_correto):
         old_name = path.abspath(arquivo_dados)
@@ -170,7 +170,7 @@ def renomeia_arquivo():
         new_name = path.abspath(arquivo_dados)
     return old_file, new_name
 
-def determina_variaveis(argv):
+def __determina_variaveis(argv):
 
     parser = ArgumentParser(description='Envia Dados ao DICI')
     parser.add_argument(dest='arquivos', type=str,
@@ -179,78 +179,79 @@ def determina_variaveis(argv):
                         help='Se informado, os dados serão enviados ao servidor de homologação do DICI')
 
     argumentos = vars(parser.parse_args(argv[1:]))
-    return argumentos
+    arquivos = argumentos['arquivos']
+    hm = argumentos['hm']
 
-def enviar_dados(argumentos):
-    print('[%s]: Iniciando execução do pyDICI' % datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    return arquivos, hm
+
+def enviar_dados(arquivos, hm=False):
     global arquivos_df, servidor
     global cronograma, entidade, arquivo_dados, ano, entrega, leiaute, formato_arquivo
 
-    arquivos = argumentos['arquivos']
-    if (not path.isfile(arquivos)):
-        raise Exception('Arquivo %s não encontrado' % arquivos)
+    print('[%s]: Iniciando execução do pyDICI' % datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
-    arquivos_df = read_excel(argumentos['arquivos'], columns=['Cronograma','Leiaute','Ano','Entrega','Entidade','Arquivo'])
-    if(len(arquivos_df) == 0):
-        raise Exception('Não foi encontrado nenhum arquivo de dados em %s' %arquivos)
-
-    print('[%s]: Foram encontrados %s arquivo(s) de dado(s)' % (datetime.now().strftime('%Y-%m-%d %H:%M:%S'),len(arquivos_df)))
-
-    if(argumentos['hm']):
-        servidor = servidor_homologacao
-        print('[%s]: Usando servidor de homologação em %s' % (
-            datetime.now().strftime('%Y-%m-%d %H:%M:%S'), servidor))
-    else:
-        servidor = servidor_producao
-        print('[%s]: Usando servidor de produção em %s' % (
-            datetime.now().strftime('%Y-%m-%d %H:%M:%S'), servidor))
-
-    for index, arquivo in arquivos_df.iterrows():
-
-        print('[%s]: Carregando %sº arquivo' % (
-            datetime.now().strftime('%Y-%m-%d %H:%M:%S'), (index + 1)))
-
-        if str(arquivo['Cronograma']) == 'nan':
-            raise Exception('Cronograma na posição %s está em branco.' %(index+1))
-        if str(arquivo['Leiaute']) == 'nan':
-            raise Exception('Leiaute na posição %s está em branco.' % (index+1))
-        if str(arquivo['Ano']) == 'nan':
-            raise Exception('Ano na posição %s está em branco.' % (index+1))
-        if(type(arquivo['Ano']) != int):
-            raise Exception('Ano na posição %s deve ser um valor inteiro.' % (index + 1))
-        if (len(str(arquivo['Ano'])) != 4):
-            raise Exception('Ano na posição %s deve possui 4 digitos.' % (index + 1))
-        if str(arquivo['Entrega']) == 'nan':
-            raise Exception('Entrega na posição %s está em branco.' % (index+1))
-        if not arquivo['Entrega'] in entregas:
-            raise Exception('Entrega na posição %s não reconhecida. Foi encontrado \'%s\'. Possíveis valores são: %s' % ((index+1),arquivo['Entrega'],entregas))
-        if str(arquivo['Entidade']) == 'nan':
-            raise Exception('Entidade na posição %s está em branco.' % (index+1))
-        if str(arquivo['Arquivo']) == 'nan':
-            raise Exception('Arquivo na posição %s está em branco.' % (index+1))
-        if not path.isfile(arquivo['Arquivo']):
-            raise Exception('Arquivo de Dados na posição %s não existe' % (index+1))
-
-        base, formato_arquivo = path.splitext(arquivo['Arquivo'])
-        formato_arquivo = formato_arquivo[1:]
-        if not formato_arquivo in formatos:
-            raise Exception('Formato %s não suportado. Formatos atualmente suportados são: %s' %(formato_arquivo,formatos))
-
-        cronograma = arquivo['Cronograma']
-        leiaute = arquivo['Leiaute']
-        entrega = arquivo['Entrega']
-        arquivo_dados = arquivo['Arquivo']
-        entidade = arquivo['Entidade']
-        ano = arquivo['Ano']
-
-        if (encontra_cronograma()):
-            if (tem_acesso()):
-                carregar_no_dici()
-
-def main(argv):
-    start_driver()
     try:
-        enviar_dados(determina_variaveis(argv))
+        __start_driver()
+
+        if (not path.isfile(arquivos)):
+            raise Exception('Arquivo %s não encontrado' % arquivos)
+
+        arquivos_df = read_excel(arquivos, columns=['Cronograma','Leiaute','Ano','Entrega','Entidade','Arquivo'])
+        if(len(arquivos_df) == 0):
+            raise Exception('Não foi encontrado nenhum arquivo de dados em %s' %arquivos)
+
+        print('[%s]: Foram encontrados %s arquivo(s) de dado(s)' % (datetime.now().strftime('%Y-%m-%d %H:%M:%S'),len(arquivos_df)))
+
+        if(hm):
+            servidor = servidor_homologacao
+            print('[%s]: Usando servidor de homologação em %s' % (
+                datetime.now().strftime('%Y-%m-%d %H:%M:%S'), servidor))
+        else:
+            servidor = servidor_producao
+            print('[%s]: Usando servidor de produção em %s' % (
+                datetime.now().strftime('%Y-%m-%d %H:%M:%S'), servidor))
+
+        for index, arquivo in arquivos_df.iterrows():
+
+            print('[%s]: Carregando %sº arquivo' % (
+                datetime.now().strftime('%Y-%m-%d %H:%M:%S'), (index + 1)))
+
+            if str(arquivo['Cronograma']) == 'nan':
+                raise Exception('Cronograma na posição %s está em branco.' %(index+1))
+            if str(arquivo['Leiaute']) == 'nan':
+                raise Exception('Leiaute na posição %s está em branco.' % (index+1))
+            if str(arquivo['Ano']) == 'nan':
+                raise Exception('Ano na posição %s está em branco.' % (index+1))
+            if(type(arquivo['Ano']) != int):
+                raise Exception('Ano na posição %s deve ser um valor inteiro.' % (index + 1))
+            if (len(str(arquivo['Ano'])) != 4):
+                raise Exception('Ano na posição %s deve possui 4 digitos.' % (index + 1))
+            if str(arquivo['Entrega']) == 'nan':
+                raise Exception('Entrega na posição %s está em branco.' % (index+1))
+            if not arquivo['Entrega'] in entregas:
+                raise Exception('Entrega na posição %s não reconhecida. Foi encontrado \'%s\'. Possíveis valores são: %s' % ((index+1),arquivo['Entrega'],entregas))
+            if str(arquivo['Entidade']) == 'nan':
+                raise Exception('Entidade na posição %s está em branco.' % (index+1))
+            if str(arquivo['Arquivo']) == 'nan':
+                raise Exception('Arquivo na posição %s está em branco.' % (index+1))
+            if not path.isfile(arquivo['Arquivo']):
+                raise Exception('Arquivo de Dados na posição %s não existe' % (index+1))
+
+            base, formato_arquivo = path.splitext(arquivo['Arquivo'])
+            formato_arquivo = formato_arquivo[1:]
+            if not formato_arquivo in formatos:
+                raise Exception('Formato %s não suportado. Formatos atualmente suportados são: %s' %(formato_arquivo,formatos))
+
+            cronograma = arquivo['Cronograma']
+            leiaute = arquivo['Leiaute']
+            entrega = arquivo['Entrega']
+            arquivo_dados = arquivo['Arquivo']
+            entidade = arquivo['Entidade']
+            ano = arquivo['Ano']
+
+            if (__encontra_cronograma()):
+                if (__tem_acesso()):
+                    __carregar_no_dici()
     except Exception as e:
         print(colored('[%s]: Ocorreu um erro e o aplicativo será finalizado: %s' % (
         datetime.now().strftime('%Y-%m-%d %H:%M:%S'), str(e)), 'red'))
@@ -258,5 +259,9 @@ def main(argv):
         driver.quit()
         print('[%s]: Finalizando execução do pyDICI' % datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
+def __main(argv):
+    arquivos, hm = __determina_variaveis(argv)
+    enviar_dados(arquivos, hm)
+
 if(__name__ == "__main__"):
-    main(argv)
+    __main(argv)
