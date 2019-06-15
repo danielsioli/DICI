@@ -14,7 +14,8 @@ import pyDICI as dici
 ```
 Enviar Arquivo
 ```
-dici.enviar('Resoluções Anatel','Resoluções Citações','p','C:\arquivo.csv')
+argumentos = {'arquivos':'C:\\arquivos.xlsx','hm':True}
+dici.enviar_dados(argumentos)
 ```
 Olhar o Help
 ```

@@ -17,7 +17,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     keywords='anatel,dici',
-    install_requires=['selenium','argparse','pandas','termcolor'],
+    install_requires=['selenium','datetime','argparse','pandas','termcolor','xlrd'],
     include_package_data=True,
     classifiers=[
         # How mature is this project? Common values are
