@@ -22,10 +22,5 @@ Montar um arquivo Excel (XLSX) com o seguinte formato. Pode ser adicionadas quan
 
 Enviar Arquivo
 ```
-argumentos = {'arquivos':'C:\\arquivos.xlsx','hm':True}
-dici.enviar_dados(argumentos)
-```
-Olhar o Help
-```
-dici.help()
+dici.enviar_dados('C:\\arquivos.xlsx')
 ```
