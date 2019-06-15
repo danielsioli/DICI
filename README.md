@@ -14,7 +14,7 @@ import pyDICI as dici
 ```
 Arquivo Excel
 
-Montar um arquivo Excel (XLSX) com o seguinte formato. Pode ser adicionadas quantas linhas forem necessárias.
+Montar um arquivo Excel (XLSX) com o seguinte formato. Podem ser adicionadas quantas linhas forem necessárias.
 
 |Cronograma|Leiaute|Ano|Entrega|Entidade|Arquivo|
 |----------|-------|---|-------|--------|-------|
