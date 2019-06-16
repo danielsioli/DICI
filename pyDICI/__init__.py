@@ -225,7 +225,7 @@ def enviar_dados(arquivos, hm=False):
             if(type(arquivo['Ano']) != int):
                 raise Exception('Ano na posição %s deve ser um valor inteiro.' % (index + 1))
             if (len(str(arquivo['Ano'])) != 4):
-                raise Exception('Ano na posição %s deve possui 4 digitos.' % (index + 1))
+                raise Exception('Ano na posição %s deve possuir 4 digitos.' % (index + 1))
             if str(arquivo['Entrega']) == 'nan':
                 raise Exception('Entrega na posição %s está em branco.' % (index+1))
             if not arquivo['Entrega'] in entregas:
