@@ -20,9 +20,11 @@ Montar um arquivo Excel (XLSX) com o seguinte formato. Podem ser adicionadas qua
 |----------|-------|---|-------|--------|-------|
 |Nome do Cronograma|Nome do Leiaute|Ano 4 Dígitos|Tipo de Entrega|Nome da Entidade|Caminho para arquivo com dados a serem carregados|
 
+Salve o arquivo no formato Excel XLSX.
+
 Os cronogramas e leiautes precisam já estar cadastrados no DICI.
 
-Exemplo
+Exemplo:
 
 |Cronograma|Leiaute|Ano|Entrega|Entidade|Arquivo|
 |----------|-------|---|-------|--------|-------|
@@ -30,9 +32,29 @@ Exemplo
 |Cronograma Marca|Cronograma Marca|2019|Pontual|AGENCIA NACIONAL DE TELECOMUNICACOES - SEDE (02.030.715/0001-12)|C:\marca.xml|
 |Credenciadas do SMP|Credenciadas do SMP|2019|Pontual|AGENCIA NACIONAL DE TELECOMUNICACOES - SEDE (02.030.715/0001-12)|C:\credenciadas.csv|
 
-Manter o chromedriver.exe (http://chromedriver.chromium.org/downloads) no %PATH% ou na pasta do seu projeto.
+Mantenha o chromedriver.exe (http://chromedriver.chromium.org/downloads) no %PATH% ou na pasta do seu projeto.
 
-Enviar Arquivo
+Enviar dados para o servidor de produção
 ```
 dici.enviar_dados('C:\\arquivos.xlsx')
+```
+Enviar dados para o servidor de homologação
+```
+dici.enviar_dados('C:\\arquivos.xlsx', hm=True)
+```
+Endereço do servidor de produção
+```
+dici.servidor_producao
+```
+Endereço do servidor de homologação
+```
+dici.servidor_homologacao
+```
+Tipos de entrega aceitas
+```
+dici.entregas
+```
+Tipos de arquivos de dados aceitos
+```
+dici.formatos
 ```
