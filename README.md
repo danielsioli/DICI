@@ -20,7 +20,7 @@ Montar um arquivo Excel (XLSX) com o seguinte formato. Podem ser adicionadas qua
 |----------|-------|---|-------|--------|-------|
 |Nome do Cronograma|Nome do Leiaute|Ano 4 Dígitos|Tipo de Entrega|Nome da Entidade|Caminho para arquivo com dados a serem carregados|
 
-Salve o arquivo no formato Excel XLSX.
+Salve o arquivo no formato Excel XLSX (ex.: C:\arquivos.xlsx)
 
 Os cronogramas e leiautes precisam já estar cadastrados no DICI.
 
