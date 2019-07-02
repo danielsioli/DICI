@@ -143,11 +143,11 @@ def __carregar_no_dici():
         else:
             print(colored('[%s]: Erro ao carregar o arquivo. Tente novamente.' % (
                 datetime.now().strftime('%Y-%m-%d %H:%M:%S')), 'red'))
-
-    if(novo_arquivo_dados != path.abspath(arquivo_dados)):
-        rename(novo_arquivo_dados, path.abspath(arquivo_dados))
-    if(old_file):
-        rename(novo_arquivo_dados+'.old', novo_arquivo_dados)
+    finally:
+        if(novo_arquivo_dados != path.abspath(arquivo_dados)):
+            rename(novo_arquivo_dados, path.abspath(arquivo_dados))
+        if(old_file):
+            rename(novo_arquivo_dados+'.old', novo_arquivo_dados)
 
 def __remover_acentos(txt):
     return normalize('NFKD', txt).encode('ASCII', 'ignore').decode('ASCII')
