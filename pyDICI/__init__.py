@@ -107,13 +107,17 @@ def __carregar_no_dici():
         alert.accept()
         if(alerta == 'Já existe um arquivo enviado com o mesmo nome, enviar este arquivo irá substituí-lo. Deseja continuar?'):
             print('[%s]: Substituindo arquivo anteriormente enviado ao DICI.' % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-            WebDriverWait(driver, tempo_espera).until(EC.presence_of_element_located((By.XPATH, '//*[@id="error-msg"]/dt/span')))
-            if(driver.find_element_by_xpath('//*[@id="error-msg"]/dt/span').text == 'Operação realizada com sucesso.'):
-                print('[%s]: Arquivo carregado no DICI. Verifique processamento em %s' % (
-                    datetime.now().strftime('%Y-%m-%d %H:%M:%S'),driver.current_url))
-            else:
-                print(colored('[%s]: Erro ao carregar o arquivo. Tente novamente.' % (
-                    datetime.now().strftime('%Y-%m-%d %H:%M:%S')),'red'))
+            try:
+                WebDriverWait(driver, tempo_espera).until(EC.presence_of_element_located((By.XPATH, '//*[@id="error-msg"]/dt/span')))
+                if(driver.find_element_by_xpath('//*[@id="error-msg"]/dt/span').text == 'Operação realizada com sucesso.'):
+                    print('[%s]: Arquivo carregado no DICI. Verifique processamento em %s' % (
+                        datetime.now().strftime('%Y-%m-%d %H:%M:%S'),driver.current_url))
+                else:
+                    print(colored('[%s]: Erro ao carregar o arquivo. Tente novamente.' % (
+                        datetime.now().strftime('%Y-%m-%d %H:%M:%S')),'red'))
+            except TimeoutError:
+                print(colored('[%s]: Não detectamos se o arquivo foi carregado ou não. Verifique o processo no DICI.' % (
+                    datetime.now().strftime('%Y-%m-%d %H:%M:%S')), 'red'))
         elif (alerta.startswith('O nome do arquivo não está em um padrão válido.')):
             nome_esperado = search(r'(?i)[a-z\_]+\-[0-9]{4}\-[a-z\_]+\.(?:' + '|'.join(formatos) + ')',alerta).group()
             arquivo_extensao = nome_esperado.split('.')
@@ -136,13 +140,16 @@ def __carregar_no_dici():
         else:
             print(colored('[%s]: Ocorreu algum erro ao carregar o arquivo: %s'%(datetime.now().strftime('%Y-%m-%d %H:%M:%S'), alerta), 'red'))
     except NoAlertPresentException:
-        WebDriverWait(driver, tempo_espera).until(EC.presence_of_element_located((By.XPATH, '//*[@id="error-msg"]/dt/span')))
-        if (driver.find_element_by_xpath('//*[@id="error-msg"]/dt/span').text == 'Operação realizada com sucesso.'):
-            print('[%s]: Arquivo carregado no DICI. Verifique processamento em %s' % (
-                datetime.now().strftime('%Y-%m-%d %H:%M:%S'), driver.current_url))
-        else:
-            print(colored('[%s]: Erro ao carregar o arquivo. Tente novamente.' % (
-                datetime.now().strftime('%Y-%m-%d %H:%M:%S')), 'red'))
+        try:
+            WebDriverWait(driver, tempo_espera).until(EC.presence_of_element_located((By.XPATH, '//*[@id="error-msg"]/dt/span')))
+            if (driver.find_element_by_xpath('//*[@id="error-msg"]/dt/span').text == 'Operação realizada com sucesso.'):
+                print('[%s]: Arquivo carregado no DICI. Verifique processamento em %s' % (
+                    datetime.now().strftime('%Y-%m-%d %H:%M:%S'), driver.current_url))
+            else:
+                print(colored('[%s]: Erro ao carregar o arquivo. Tente novamente.' % (
+                    datetime.now().strftime('%Y-%m-%d %H:%M:%S')), 'red'))
+        except TimeoutError:
+            print(colored('[%s]: Não detectamos se o arquivo foi carregado ou não. Verifique o processo no DICI.' % (datetime.now().strftime('%Y-%m-%d %H:%M:%S')), 'red'))
     finally:
         if(novo_arquivo_dados != path.abspath(arquivo_dados)):
             rename(novo_arquivo_dados, path.abspath(arquivo_dados))
