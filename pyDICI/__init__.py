@@ -99,7 +99,7 @@ def __carregar_no_dici():
 
     driver.find_element_by_id("formEdicao:btnSalvar").click()
 
-    tempo_espera = 600
+    tempo_espera = 1800
 
     try:
         alert = driver.switch_to.alert
